@@ -5,5 +5,27 @@ registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 [dependencies]
-jecs = "ukendio/jecs@0.9.0"
-chrono = "parihsz/chrono@1.4.0"
+Chrono = "parihsz/chrono@1.4.0"
+# Drop-in network optimizer, no need for docs
+
+Jecs = "ukendio/jecs@0.9.0"
+# ECS engine
+
+Janitor = "howmanysmall/janitor@1.18.3"
+# Lifetime management
+# https://howmanysmall.github.io/Janitor/api/Janitor
+
+Signal = "lucasmzreal/fastsignal@10.4.0"
+# Event management
+# https://rblxutils.github.io/FastSignal/api/ScriptSignal
+
+Promise = "evaera/promise@4.0.0"
+# Callback management
+# https://eryn.io/roblox-lua-promise/docs/Tour
+
+[server-dependencies]
+
+ProfileStore = "lm-loleris/profilestore@1.0.3"
+# Data management
+# https://madstudioroblox.github.io/ProfileStore/tutorial/
+# https://madstudioroblox.github.io/ProfileStore/api/
