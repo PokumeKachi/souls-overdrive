@@ -1,5 +1,10 @@
+set dotenv-load := true
+
 _default:
     @just --choose
+
+asphalt:
+    asphalt asphalt
 
 run:
     rojo serve
