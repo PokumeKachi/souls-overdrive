@@ -1,3 +1,3 @@
-print("Hello world, from server!")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+require(ReplicatedStorage.Packages.Chrono).Start()
 
-Instance.new('Part', workspace)
