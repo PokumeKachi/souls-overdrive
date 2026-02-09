@@ -4,7 +4,7 @@ _default:
     @just --choose
 
 asphalt:
-    asphalt asphalt
+    asphalt sync
 
 run:
     rojo serve

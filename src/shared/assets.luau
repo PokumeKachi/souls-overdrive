@@ -4,9 +4,6 @@ local assets = {
 	animations = {
 		dance = "rbxassetid://87103860714928",
 	},
-	models = {
-		baseplate = "rbxassetid://96499102385709",
-	},
 	some_image_on_roblox = "rbxassetid://987654321",
 	some_sound_on_roblox = "rbxassetid://123456789",
 }

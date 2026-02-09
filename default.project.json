@@ -12,15 +12,15 @@
             }
         },
 
-        "ServerScriptService": {
-            "Server": {
-                "$path": "src/server"
-            }
-        },
-
         "ServerStorage": {
             "Packages": {
                 "$path": "ServerPackages"
+            }
+        },
+
+        "ServerScriptService": {
+            "Server": {
+                "$path": "src/server"
             }
         },
 
@@ -33,14 +33,11 @@
         },
 
         "Workspace": {
-            "$className": "Workspace",
-            "$path": "Workspace",
-            "$properties": {
-                "FilteringEnabled": true
-            }
+            "$path": "Workspace"
         },
 
         "Lighting": {
+            "$path": "Lighting",
             "$properties": {
                 "Ambient": [0, 0, 0],
                 "Brightness": 2,
