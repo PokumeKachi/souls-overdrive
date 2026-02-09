@@ -8,8 +8,17 @@ realm = "shared"
 Chrono = "parihsz/chrono@1.4.0"
 # Drop-in network optimizer, no need for docs
 
+Inputter = "adammillsy/inputter@0.1.1"
+# Input library
+# https://adammillsy.github.io/Inputter/
+
+Hitbox = "breezy1214/hitbox@4.1.2"
+# EZ hitbox
+# https://github.com/Breezy1214/EZ-Hitbox?tab=readme-ov-file#quick-start
+
 Jecs = "ukendio/jecs@0.9.0"
 # ECS engine
+# https://github.com/Ukendio/jecs/tree/main/how_to
 
 Janitor = "howmanysmall/janitor@1.18.3"
 # Lifetime management
@@ -29,3 +38,11 @@ ProfileStore = "lm-loleris/profilestore@1.0.3"
 # Data management
 # https://madstudioroblox.github.io/ProfileStore/tutorial/
 # https://madstudioroblox.github.io/ProfileStore/api/
+
+# We also use Blink for networking and Asphalt for asset management
+# https://1axen.github.io/blink/getting-started/2-introduction
+# https://github.com/jackTabsCode/asphalt?tab=readme-ov-file
+
+# Rbxm dependencies
+# https://alexxander.gitbook.io/signalplus/getting-started/introduction
+# https://alexxander.gitbook.io/tweenplus/creation/introduction

@@ -34,6 +34,7 @@
 
         "Workspace": {
             "$className": "Workspace",
+            "$path": "Workspace",
             "$properties": {
                 "FilteringEnabled": true
             }
