@@ -1,0 +1,7 @@
+{
+  "aliases": {
+      "@pkgs": "Packages",
+    "@shared": "src/Shared",
+    "@server": "src/Server"
+  }
+}

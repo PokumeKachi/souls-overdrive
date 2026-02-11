@@ -6,11 +6,29 @@ _default:
 asphalt:
     asphalt sync
 
+blink:
+    blink Blink/main.blink --watch
+
+watch:
+	watchexec \
+	  -w src \
+	  -w wally.toml \
+	  -w default.project.json \
+	  -- just sourcemap
+
+sourcemap: wally
+    rojo sourcemap default.project.json --output sourcemap.json
+    wally-package-types --sourcemap sourcemap.json Packages/
+
 run:
     rojo serve
 
 wally:
     wally install
+
+pesde:
+    pesde install
+
 
 todo:
     taskwarrior-tui --taskdata .task

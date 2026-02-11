@@ -16,10 +16,6 @@ Hitbox = "breezy1214/hitbox@4.1.2"
 # EZ hitbox
 # https://github.com/Breezy1214/EZ-Hitbox?tab=readme-ov-file#quick-start
 
-Jecs = "ukendio/jecs@0.9.0"
-# ECS engine
-# https://github.com/Ukendio/jecs/tree/main/how_to
-
 Janitor = "howmanysmall/janitor@1.18.3"
 # Lifetime management
 # https://howmanysmall.github.io/Janitor/api/Janitor
@@ -28,9 +24,41 @@ Signal = "lucasmzreal/fastsignal@10.4.0"
 # Event management
 # https://rblxutils.github.io/FastSignal/api/ScriptSignal
 
-Promise = "evaera/promise@4.0.0"
+Promise = "lukadev-0/typed-promise@4.0.2"
 # Callback management
 # https://eryn.io/roblox-lua-promise/docs/Tour
+
+TweenPlus = "alexanderlindholt/tweenplus@2.13.1"
+# Better Tween
+# https://alexxander.gitbook.io/tweenplus/creation/introduction
+
+Jecs = "ukendio/jecs@0.9.0"
+# ECS engine
+# https://yetanotherclown.github.io/jecs-community/
+
+JecsVide = "pepeeltoro41/jecs-vide@1.0.4"
+# Vide integration
+# https://github.com/PepeElToro41/jecs-utils/tree/main/packages/jecs-vide
+
+JecsSpring = "pepeeltoro41/jecs-spring@1.0.1"
+# Ripple spring integration
+# https://github.com/PepeElToro41/jecs-utils/tree/main/packages/jecs-spring
+
+JecsUtils = "pepeeltoro41/jecs-utils@1.4.0"
+# Utils
+
+Replecs = "pepeeltoro41/replecs@0.2.3"
+# ECS replication
+# https://pepeeltoro41.github.io/replecs/started/setting-up/
+
+Hammer = "mark-marks/hammer@0.3.1"
+# ECS utilities
+# https://github.com/Mark-Marks/hammer
+
+Planck = "yetanotherclown/planck@0.2.0"
+# ECS scheduler
+# https://github.com/YetAnotherClown/planck
+# https://yetanotherclown.github.io/planck/docs/getting_started/introduction
 
 [server-dependencies]
 
@@ -38,10 +66,3 @@ ProfileStore = "lm-loleris/profilestore@1.0.3"
 # Data management
 # https://madstudioroblox.github.io/ProfileStore/tutorial/
 # https://madstudioroblox.github.io/ProfileStore/api/
-
-# We also use Blink for networking and Asphalt for asset management
-# https://1axen.github.io/blink/getting-started/2-introduction
-# https://github.com/jackTabsCode/asphalt?tab=readme-ov-file
-
-# Rbxm dependencies
-# https://alexxander.gitbook.io/tweenplus/creation/introduction

@@ -1,0 +1,9 @@
+option ClientOutput = "./client/init.luau"
+option ServerOutput = "./server/init.luau"
+
+event Hit {
+    from: Client,
+    type: Reliable,
+    call: SingleSync,
+    data: (u8, u8, u8 )
+}

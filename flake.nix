@@ -12,10 +12,14 @@
                 let
                     pkgs = import nixpkgs { inherit system; };
                     libs = with pkgs; [
+                        openssl
+                        dbus
                     ];
                     tools = with pkgs; [
+                        pkg-config
                         rojo
                         luau
+                        lune
 
                         luau-lsp
                         selene

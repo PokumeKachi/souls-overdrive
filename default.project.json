@@ -5,7 +5,11 @@
 
         "ReplicatedStorage": {
             "Shared": {
-                "$path": "src/shared"
+                "$path": "src/shared",
+
+                "Networking": {
+                    "$path": "Blink/client"
+                }
             },
             "Packages": {
                 "$path": "Packages"
@@ -19,6 +23,13 @@
         },
 
         "ServerScriptService": {
+            "API": {
+                "$path": "src/api",
+
+                "Networking": {
+                    "$path": "Blink/server"
+                }
+            },
             "Server": {
                 "$path": "src/server"
             }
