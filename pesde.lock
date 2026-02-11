@@ -16,6 +16,13 @@ frktest = [{ name = "itsfrank/frktest", version = "^0.0.4", index = "https://git
 luau-lsp = [{ name = "pesde/luau_lsp", version = "=1.53.2", index = "https://github.com/pesde-pkg/index", target = "lune" }, "dev"]
 stylua = [{ name = "pesde/stylua", version = "=2.1.0", index = "https://github.com/pesde-pkg/index", target = "lune" }, "dev"]
 
+[graph."1axen/blink@0.18.6 lune"]
+direct = ["blink", { name = "1axen/blink", version = "^0.18.6", index = "default", target = "lune" }, "dev"]
+
+[graph."1axen/blink@0.18.6 lune".pkg_ref]
+ref_ty = "pesde"
+index_url = "https://github.com/pesde-pkg/index"
+
 [graph."jiwonz/dirs@0.6.0 lune".dependencies]
 greentea = ["jiwonz/greentea_luau@0.2.0 luau", "standard"]
 pathfs = ["jiwonz/pathfs@0.6.0 lune", "standard"]
@@ -58,6 +65,17 @@ index_url = "https://github.com/pesde-pkg/index"
 frktest = [{ name = "itsfrank/frktest", version = "^0.0.4", index = "https://github.com/pesde-pkg/index", target = "luau" }, "dev"]
 greentea = [{ name = "jiwonz/greentea_luau", version = "^0.2.0", index = "https://github.com/pesde-pkg/index", target = "luau" }, "standard"]
 luau_path = [{ name = "jiwonz/luau_path", version = "^0.2.0", index = "https://github.com/pesde-pkg/index", target = "luau" }, "standard"]
+
+[graph."killergg/axis@0.2.3 roblox"]
+direct = ["axis", { name = "killergg/axis", version = "^0.2.3", index = "default" }, "standard"]
+
+[graph."killergg/axis@0.2.3 roblox".pkg_ref]
+ref_ty = "pesde"
+index_url = "https://github.com/pesde-pkg/index"
+
+[graph."killergg/axis@0.2.3 roblox".pkg_ref.dependencies]
+rojo = [{ name = "pesde/rojo", version = "^7.4.4", index = "https://github.com/pesde-pkg/index", target = "lune" }, "dev"]
+scripts = [{ name = "pesde/scripts_rojo", version = "^0.1.0", index = "https://github.com/pesde-pkg/index", target = "lune" }, "dev"]
 
 [graph."lukadev_0/option@1.2.1 lune".pkg_ref]
 ref_ty = "pesde"
