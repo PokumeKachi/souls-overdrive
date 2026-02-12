@@ -6,6 +6,9 @@ _default:
 asphalt:
     asphalt sync
 
+deps: pesde wally
+    @echo "Done installing deps!"
+
 blink:
     pesde run blink Blink/main.blink --watch
 
