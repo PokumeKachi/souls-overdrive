@@ -17,11 +17,11 @@ watch:
 	  -- just sourcemap
 
 sourcemap: wally
-    rojo sourcemap default.project.json --output sourcemap.json
+    argon sourcemap default.project.json --output sourcemap.json
     wally-package-types --sourcemap sourcemap.json Packages/
 
 run:
-    rojo serve
+    argon serve
 
 wally:
     wally install

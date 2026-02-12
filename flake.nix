@@ -17,7 +17,9 @@
                     ];
                     tools = with pkgs; [
                         pkg-config
-                        rojo
+
+                        argon
+
                         luau
                         lune
 
@@ -72,6 +74,7 @@
                             shellHook = ''
                                 export SHELL=${ps.pkgs.bashInteractive}/bin/bash
                                 export LD_LIBRARY_PATH=${ps.pkgs.lib.makeLibraryPath ps.libs}:$LD_LIBRARY_PATH
+                                alias rojo=argon
                             '';
                         }
                     );
