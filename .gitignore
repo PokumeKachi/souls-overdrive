@@ -5,6 +5,12 @@
 /*.rbxlx.lock
 /*.rbxl.lock
 Packages/
+ServerPackages/
+
+luau_packages/
+roblox_packages/
+lune_packages/
+
 .env
 sourcemap.json
 Docs/
