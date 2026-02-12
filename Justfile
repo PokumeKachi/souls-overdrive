@@ -7,7 +7,7 @@ asphalt:
     asphalt sync
 
 blink:
-    blink Blink/main.blink --watch
+    pesde run blink Blink/main.blink --watch
 
 watch:
 	watchexec \
