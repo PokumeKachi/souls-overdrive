@@ -11,14 +11,6 @@ target = "deps"
 Chrono = "parihsz/chrono@1.4.0"
 # Drop-in network optimizer, no need for docs
 
-Inputter = "adammillsy/inputter@0.1.1"
-# Input library
-# https://adammillsy.github.io/Inputter/
-
-Hitbox = "breezy1214/hitbox@4.1.2"
-# EZ hitbox
-# https://github.com/Breezy1214/EZ-Hitbox?tab=readme-ov-file#quick-start
-
 Janitor = "howmanysmall/janitor@1.18.3"
 # Lifetime management
 # https://howmanysmall.github.io/Janitor/api/Janitor
@@ -31,9 +23,25 @@ Promise = "lukadev-0/typed-promise@4.0.2"
 # Callback management
 # https://eryn.io/roblox-lua-promise/docs/Tour
 
+Inputter = "adammillsy/inputter@0.1.1"
+# Input library
+# https://adammillsy.github.io/Inputter/
+
+Axis = "neond00m/axis@0.2.3"
+# Jecs input library
+# https://neond00m.github.io/Axis/docs/Introduction/getting_started
+
+Hitbox = "breezy1214/hitbox@4.1.2"
+# EZ hitbox
+# https://github.com/Breezy1214/EZ-Hitbox?tab=readme-ov-file#quick-start
+
 TweenPlus = "alexanderlindholt/tweenplus@2.13.1"
 # Better Tween
 # https://alexxander.gitbook.io/tweenplus/creation/introduction
+
+Vide = "centau/vide@0.4.0"
+# UI library
+# https://centau.github.io/vide/tut/crash-course/2-creation.html
 
 Jecs = "ukendio/jecs@0.9.0"
 # ECS engine

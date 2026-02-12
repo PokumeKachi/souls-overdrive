@@ -1,67 +1,58 @@
 {
-    "name": "soul",
-    "tree": {
-        "$className": "DataModel",
-
-        "ReplicatedStorage": {
-            "Shared": {
-                "$path": "src/shared",
-
-                "Networking": {
-                    "$path": "Blink/client"
-                }
-            },
-            "Packages": {
-                "$path": "Packages"
-            }
-        },
-
-        "ServerStorage": {
-            "Packages": {
-                "$path": "ServerPackages"
-            }
-        },
-
-        "ServerScriptService": {
-            "API": {
-                "$path": "src/api",
-
-                "Networking": {
-                    "$path": "Blink/server"
-                }
-            },
-            "Server": {
-                "$path": "src/server"
-            }
-        },
-
-        "StarterPlayer": {
-            "StarterPlayerScripts": {
-                "Client": {
-                    "$path": "src/client"
-                }
-            }
-        },
-
-        "Workspace": {
-            "$path": "Workspace"
-        },
-
-        "Lighting": {
-            "$path": "Lighting",
-            "$properties": {
-                "Ambient": [0, 0, 0],
-                "Brightness": 2,
-                "GlobalShadows": true,
-                "Outlines": false,
-                "Technology": "Voxel"
-            }
-        },
-
-        "SoundService": {
-            "$properties": {
-                "RespectFilteringEnabled": true
-            }
+  "name": "soul",
+  "tree": {
+    "$className": "DataModel",
+    "Lighting": {
+      "$path": "Lighting",
+      "$properties": {
+        "Technology": "Voxel",
+        "Brightness": 2,
+        "GlobalShadows": true,
+        "Outlines": false,
+        "Ambient": [0, 0, 0]
+      }
+    },
+    "ReplicatedStorage": {
+      "Packages": {
+        "$path": "Packages"
+      },
+      "Shared": {
+        "$path": "src/shared",
+        "Networking": {
+          "$path": "Blink/client"
         }
+      }
+    },
+    "ServerScriptService": {
+      "API": {
+        "$path": "src/api",
+        "Networking": {
+          "$path": "Blink/server"
+        }
+      },
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "ServerStorage": {
+      "Packages": {
+        "$path": "ServerPackages"
+      }
+    },
+    "SoundService": {
+      "$properties": {
+        "RespectFilteringEnabled": true
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "Workspace": {
+      "$path": "Workspace"
     }
+  }
 }
