@@ -3,7 +3,6 @@
 ```bash
 cargo install asphalt
 cargo install pesde --features="bin"
-curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
 ```
 
 
