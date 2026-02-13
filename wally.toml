@@ -23,11 +23,11 @@ Promise = "lukadev-0/typed-promise@4.0.2"
 # Callback management
 # https://eryn.io/roblox-lua-promise/docs/Tour
 
-Inputter = "adammillsy/inputter@0.1.1"
+Inputter = "adammillsy/inputter@0.1.3"
 # Input library
 # https://adammillsy.github.io/Inputter/
 
-Axis = "neond00m/axis@0.2.3"
+Axis = "neond00m/axis@0.2.4"
 # Jecs input library
 # https://neond00m.github.io/Axis/docs/Introduction/getting_started
 
