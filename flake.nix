@@ -16,6 +16,8 @@
                         dbus
                     ];
                     tools = with pkgs; [
+                        vinegar
+
                         pkg-config
 
                         argon
