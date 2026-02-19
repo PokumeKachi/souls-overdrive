@@ -27,10 +27,6 @@ Inputter = "adammillsy/inputter@0.1.3"
 # Input library
 # https://adammillsy.github.io/Inputter/
 
-Axis = "neond00m/axis@0.2.4"
-# Jecs input library
-# https://neond00m.github.io/Axis/docs/Introduction/getting_started
-
 Hitbox = "breezy1214/hitbox@4.1.2"
 # EZ hitbox
 # https://github.com/Breezy1214/EZ-Hitbox?tab=readme-ov-file#quick-start
@@ -39,17 +35,20 @@ TweenPlus = "alexanderlindholt/tweenplus@2.13.1"
 # Better Tween
 # https://alexxander.gitbook.io/tweenplus/creation/introduction
 
-Vide = "centau/vide@0.4.0"
+React = "jsdotlua/react@17.1.0"
+ReactRoblox = "jsdotlua/react-roblox@17.2.1"
+Ripple = "littensy/ripple@0.10.1"
+ReactRipple = "littensy/react-ripple@3.0.1"
 # UI library
-# https://centau.github.io/vide/tut/crash-course/2-creation.html
+# https://devforum.roblox.com/t/how-to-react-roblox/2964543
 
 Jecs = "ukendio/jecs@0.9.0"
 # ECS engine
 # https://yetanotherclown.github.io/jecs-community/
 
-JecsVide = "pepeeltoro41/jecs-vide@1.0.4"
-# Vide integration
-# https://github.com/PepeElToro41/jecs-utils/tree/main/packages/jecs-vide
+Axis = "neond00m/axis@0.2.4"
+# Jecs input library
+# https://neond00m.github.io/Axis/docs/Introduction/getting_started
 
 JecsSpring = "pepeeltoro41/jecs-spring@1.0.1"
 # Ripple spring integration

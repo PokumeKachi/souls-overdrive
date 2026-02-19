@@ -4,6 +4,9 @@ local assets = {
 	animations = {
 		dance = "rbxassetid://87103860714928",
 	},
+	images = {
+		groupLogo = "rbxassetid://131540872181655",
+	},
 	some_image_on_roblox = "rbxassetid://987654321",
 	some_sound_on_roblox = "rbxassetid://123456789",
 }

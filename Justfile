@@ -20,8 +20,8 @@ watch:
 	  -- just sourcemap
 
 sourcemap: wally
-    argon sourcemap default.project.json --output sourcemap.json
-    wally-package-types --sourcemap sourcemap.json Packages/
+    argon sourcemap -w -n -o sourcemap.json
+    # wally-package-types --sourcemap sourcemap.json Packages/
 
 run:
     argon serve

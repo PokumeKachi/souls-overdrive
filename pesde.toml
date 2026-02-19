@@ -20,8 +20,3 @@ blink = { name = "1axen/blink", version = "^0.18.6", target = "lune" }
 [engines]
 pesde = "^0.7.0"
 lune = "^0.10.2"
-
-[dependencies]
-axis = { name = "killergg/axis", version = "^0.2.3" }
-# JECS input library
-# https://neond00m.github.io/Axis/docs/Introduction/getting_started

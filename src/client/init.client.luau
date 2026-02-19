@@ -1,19 +1,22 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Packages = ReplicatedStorage.Packages
 
+local Packages = ReplicatedStorage.Packages
 local Chrono = require(Packages.Chrono)
+local React = require(Packages.React)
+local ReactRoblox = require(Packages.ReactRoblox)
+
+local Players = game:GetService('Players')
+
+local Player = Players.LocalPlayer
+
+local guiHandle = Instance.new('ScreenGui')
+local guiRoot = ReactRoblox.createRoot(guiHandle)
+
+local Gui = require(script.Gui)
+
 Chrono.Start()
 
--- local Tween = require(Packages.TweenPlus)
---
--- local tween = Tween(workspace.Part, {
--- 	Position = Vector3.new(0, 10, 0),
--- 	Color = Color3.fromRGB(255, 255, 0),
--- 	-- And as many more as you’d like.
--- }, { -- Options (optional).
--- 	Time = 50,
--- 	EasingStyle = "Sine",
--- 	EasingDirection = "InOut",
--- })
---
--- tween:Start()
+guiHandle.ScreenInsets = Enum.ScreenInsets.None
+guiHandle.Parent = Player.PlayerGui
+
+guiRoot:render(React.createElement(Gui))
