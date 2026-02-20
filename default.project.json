@@ -5,10 +5,10 @@
     "Lighting": {
       "$path": "Lighting",
       "$properties": {
-        "Ambient": [0, 0, 0],
         "Brightness": 2,
-        "Technology": "Voxel",
         "Outlines": false,
+        "Ambient": [0, 0, 0],
+        "Technology": "Voxel",
         "GlobalShadows": true
       }
     },

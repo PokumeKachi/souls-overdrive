@@ -1,5 +1,3 @@
-local Profile = {}
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.Packages
 local Promise = require(Packages.Promise)
@@ -16,6 +14,8 @@ local PlayerStore = ProfileStore.New("PlayerStore", Schema)
 type ProfileSession = typeof(PlayerStore:StartSessionAsync())
 
 local Profiles: { [Player]: ProfileSession } = {}
+
+local Profile = {}
 
 function Profile:GetProfile(player: Player): ProfileSession?
 	return Profiles[player]
