@@ -5,6 +5,7 @@ local TweenService = game:GetService("TweenService")
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local Ripple = require(Packages.ReactRipple)
+-- local Tween = require(Packages.TweenPlus)
 
 local Promise = require(Packages.Promise)
 
@@ -14,11 +15,9 @@ local assets = require(Shared.assets)
 local ANIMATION_DURATION = 3
 
 return function(props: {
-	position: UDim2,
-	text: string,
 	cleanupCallback: () -> (),
 })
-	local hideBinding, hideTween = Ripple.useTween(0, {
+	local fadeOut, fadeOutTween = Ripple.useTween(0, {
 		easing = "expoOut",
 		duration = ANIMATION_DURATION,
 		start = true,
@@ -27,7 +26,7 @@ return function(props: {
 	React.useEffect(function()
 		local inputConnection: RBXScriptConnection
 
-        inputConnection= UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+		inputConnection = UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
 			if gameProcessedEvent then
 				return
 			end
@@ -37,20 +36,28 @@ return function(props: {
 				or input.UserInputType == Enum.UserInputType.MouseButton1
 				or input.UserInputType == Enum.UserInputType.Touch
 			then
-                inputConnection:Disconnect()
-				hideTween:setGoal(1)
+				inputConnection:Disconnect()
+				fadeOutTween:setGoal(1)
 				Promise.delay(ANIMATION_DURATION):andThen(props.cleanupCallback)
 
 				local camera = workspace.CurrentCamera
 				local oldFov = 70
 
 				local cameraTween = TweenService:Create(
-					workspace.CurrentCamera,
+					camera,
 					TweenInfo.new(ANIMATION_DURATION, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
 					{
 						FieldOfView = oldFov,
 					}
 				)
+
+				-- local cameraTween = Tween(camera, {
+				-- 	FieldOfView = oldFov,
+				-- }, { -- Options (optional).
+				-- 	Time = 10,
+				-- 	EasingStyle = "Expo",
+				-- 	EasingDirection = "Out",
+				-- })
 
 				camera.FieldOfView = 120
 				cameraTween:Play()
@@ -64,20 +71,20 @@ return function(props: {
 
 	return React.createElement("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
-		Position = props.position,
+		Position = UDim2.fromScale(0.5, 0.5),
 		Size = UDim2.fromScale(1, 1),
 
 		BackgroundColor3 = Color3.new(0, 0, 0),
-		BackgroundTransparency = hideBinding:map(function(t)
+		BackgroundTransparency = fadeOut:map(function(t)
 			return t
 		end),
 	}, {
 		React.createElement("ImageLabel", {
 			AnchorPoint = Vector2.new(0.5, 0.5),
-			Position = hideBinding:map(function(t)
+			Position = fadeOut:map(function(t)
 				return UDim2.fromScale(0.5, 0.4 - 1 * t)
 			end),
-			Size = hideBinding:map(function(t)
+			Size = fadeOut:map(function(t)
 				local scaleX = 0.2 * (1 + 2 * t)
 				local scaleY = scaleX
 				return UDim2.fromScale(scaleX, scaleY)
@@ -90,10 +97,10 @@ return function(props: {
 		}),
 		React.createElement("TextLabel", {
 			AnchorPoint = Vector2.new(0.5, 0.5),
-			Position = hideBinding:map(function(t)
+			Position = fadeOut:map(function(t)
 				return UDim2.fromScale(0.5, 0.8 + 1 * t)
 			end),
-			Size = hideBinding:map(function(t)
+			Size = fadeOut:map(function(t)
 				local scaleX = 0.4 * (1 + 2 * t)
 				local scaleY = 0.1 * (1 + 2 * t)
 				return UDim2.fromScale(scaleX, scaleY)
@@ -101,9 +108,9 @@ return function(props: {
 
 			BackgroundTransparency = 1,
 
-			Text = props.text,
+			Text = "« PRESS ANY KEYS TO PROCEED »",
 			TextColor3 = Color3.new(1, 1, 1),
-			TextTransparency = hideBinding:map(function(t)
+			TextTransparency = fadeOut:map(function(t)
 				return t
 			end),
 

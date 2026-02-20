@@ -10,7 +10,7 @@ deps: pesde wally
     @echo "Done installing deps!"
 
 blink:
-    pesde run blink Blink/main.blink --watch
+    pesde run blink -- Blink/main.blink
 
 watch:
 	watchexec \

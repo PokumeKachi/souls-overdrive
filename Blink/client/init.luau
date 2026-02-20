@@ -14,6 +14,7 @@ _G._BLINK["BLINK"] = true
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local Promise = require(ReplicatedStorage.Packages.Promise)
 local BASE_EVENT_NAME = "BLINK"
 local Invocations = 0
 
@@ -157,20 +158,40 @@ local Queue: any = {
 
 local SerdesEvent = "?"
 local SerdesThread: thread?
-local function WriteEVENT_Hit(Value1: number, Value2: number, Value3: number): ()
-	-- Allocate BLOCK: 4 bytes
-	local BLOCK_START = Allocate(4)
+Queue.Reliable[1] = table.create(256)
+local function WriteEVENT_ide(Value1: number): ()
+	-- Allocate BLOCK: 2 bytes
+	local BLOCK_START = Allocate(2)
 	buffer.writeu8(SendBuffer, BLOCK_START + 0, 0)
 	buffer.writeu8(SendBuffer, BLOCK_START + 1, Value1)
-	buffer.writeu8(SendBuffer, BLOCK_START + 2, Value2)
-	buffer.writeu8(SendBuffer, BLOCK_START + 3, Value3)
+end
+
+local function WriteFUNCTION_DATA_LastPlayed(Value: nil, InvocationIdentifier: number): ()
+	-- Allocate BLOCK: 2 bytes
+	local BLOCK_START = Allocate(2)
+	buffer.writeu8(SendBuffer, BLOCK_START + 0, 1)
+	buffer.writeu8(SendBuffer, BLOCK_START + 1, InvocationIdentifier)
+end
+
+local function ReadFUNCTION_RETURN_LastPlayed(): (number)
+	-- Read BLOCK: 9 bytes
+	local BLOCK_START = Read(9)
+	local Success = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
+	if Success ~= 1 then
+		error("Server encountered an error.")
+	end
+	local Value = buffer.readf64(RecieveBuffer, BLOCK_START + 1)
+	return Value
 end
 
 if not RunService:IsRunning() then
 	local NOOP = function() end
 	local Returns = table.freeze({
-	Hit = {
+	ide = {
 		Fire = NOOP
+	},
+	LastPlayed = {
+		Invoke = NOOP
 	},
 	})
 	return Returns :: BLINK_EVENTS_SYMBOL
@@ -214,6 +235,18 @@ Reliable.OnClientEvent:Connect(function(Buffer: buffer, Instances: {Instance})
 		-- Read BLOCK: 1 bytes
 		local BLOCK_START = Read(1)
 		local Index = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
+		if Index == 1 then
+			-- Read BLOCK: 1 bytes
+			local BLOCK_START = Read(1)
+			local InvocationIdentifier = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
+				local Success, ReturnValue = pcall(function ()
+					return ReadFUNCTION_RETURN_LastPlayed()
+				end)
+			if Calls[InvocationIdentifier] ~= nil then
+				task.spawn(Calls[InvocationIdentifier], Success, ReturnValue)
+				Calls[InvocationIdentifier] = nil
+			end
+		end
 	end
 end)
 Unreliable.OnClientEvent:Connect(function(Buffer: buffer, Instances: {Instance})
@@ -238,9 +271,31 @@ end)
 local Returns = table.freeze({
 	StepReplication = StepReplication,
 
-	Hit = {
-		Fire = function(Value1: number, Value2: number, Value3: number): ()
-			WriteEVENT_Hit(Value1, Value2, Value3)
+	ide = {
+		Fire = function(Value1: number): ()
+			WriteEVENT_ide(Value1)
+		end
+	},
+	LastPlayed = {
+		Invoke = function(Value: nil)
+			return Promise.new(function (Resolve, Reject, OnCancel)
+				local InvocationIdentifier = Invoke()
+				if Calls[InvocationIdentifier] ~= nil then
+					Invocations -= 1
+					error("More than 256 calls are awaiting a response, this packet has been dropped.")
+				end
+				WriteFUNCTION_DATA_LastPlayed(Value, InvocationIdentifier)
+				Calls[InvocationIdentifier] = coroutine.running()
+				OnCancel(function ()
+					Calls[InvocationIdentifier] = nil
+				end)
+				local Success, ReturnValue: number = coroutine.yield()
+				if Success ~= true then
+					Reject("There was an exception while processing \"LastPlayed\".")
+					return 
+				end
+				Resolve(ReturnValue)
+			end)
 		end
 	},
 })

@@ -15,6 +15,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local Promise = require(ReplicatedStorage.Packages.Promise)
 local BASE_EVENT_NAME = "BLINK"
 local Invocations = 0
 
@@ -159,19 +160,34 @@ local Queue: any = {
 local SerdesEvent = "?"
 local SerdesThread: thread?
 Queue.Reliable[0] = table.create(256)
-local function ReadEVENT_Hit(): (number, number, number)
-	-- Read BLOCK: 3 bytes
-	local BLOCK_START = Read(3)
+Queue.Reliable[1] = table.create(256)
+local function ReadEVENT_ide(): (number)
+	-- Read BLOCK: 1 bytes
+	local BLOCK_START = Read(1)
 	local Value1 = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
-	local Value2 = buffer.readu8(RecieveBuffer, BLOCK_START + 1)
-	local Value3 = buffer.readu8(RecieveBuffer, BLOCK_START + 2)
-	return Value1, Value2, Value3
+	return Value1
+end
+
+local function ReadFUNCTION_DATA_LastPlayed(): (nil)
+	return nil
+end
+
+local function WriteFUNCTION_RETURN_LastPlayed(Value: number, InvocationIdentifier: number): ()
+	-- Allocate BLOCK: 11 bytes
+	local BLOCK_START = Allocate(11)
+	buffer.writeu8(SendBuffer, BLOCK_START + 0, 1)
+	buffer.writeu8(SendBuffer, BLOCK_START + 1, InvocationIdentifier)
+	buffer.writeu8(SendBuffer, BLOCK_START + 2, 1)
+	buffer.writef64(SendBuffer, BLOCK_START + 3, Value)
 end
 
 if not RunService:IsRunning() then
 	local NOOP = function() end
 	local Returns = table.freeze({
-	Hit = {
+	ide = {
+		On = NOOP
+	},
+	LastPlayed = {
 		On = NOOP
 	},
 	})
@@ -237,15 +253,27 @@ Reliable.OnServerEvent:Connect(function(Player: Player, Buffer: buffer, Instance
 		local BLOCK_START = Read(1)
 		local Index = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
 		if Index == 0 then
-			local Value1: number, Value2: number, Value3: number = ReadEVENT_Hit()
+			local Value1: number = ReadEVENT_ide()
 			if Events.Reliable[0] ~= nil then
-				SerdesEvent = "Hit"
-				Events.Reliable[0](Player, Value1, Value2, Value3)
+				task.spawn(Events.Reliable[0], Player, Value1)
 			else
 				if #Queue.Reliable[0] > 256 then
-					warn("[Blink]: Event queue of \"Hit\" exceeded 256, did you forget to implement a listener?")
+					warn("[Blink]: Event queue of \"ide\" exceeded 256, did you forget to implement a listener?")
 				end
-				table.insert(Queue.Reliable[0], {Player, Value1, Value2, Value3} :: {any})
+				table.insert(Queue.Reliable[0], {Player, Value1} :: {any})
+			end
+		elseif Index == 1 then
+			-- Read BLOCK: 1 bytes
+			local BLOCK_START = Read(1)
+			local InvocationIdentifier = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
+			local Value: nil = ReadFUNCTION_DATA_LastPlayed()
+			if Events.Reliable[1] ~= nil then
+				task.spawn(Events.Reliable[1], Player, Value, InvocationIdentifier)
+			else
+				if #Queue.Reliable[1] > 256 then
+					warn("[Blink]: Event queue of \"LastPlayed\" exceeded 256, did you forget to implement a listener?")
+				end
+				table.insert(Queue.Reliable[1], {Player, Value, InvocationIdentifier} :: {any})
 			end
 		end
 	end
@@ -272,11 +300,11 @@ end)
 local Returns = table.freeze({
 	StepReplication = StepReplication,
 
-	Hit = {
-		On = function(Listener: (Player: Player, Value1: number, Value2: number, Value3: number) -> ()): () -> ()
+	ide = {
+		On = function(Listener: (Player: Player, Value1: number) -> ()): () -> ()
 			Events.Reliable[0] = Listener
 			for Index, Arguments in Queue.Reliable[0] do
-				Listener(table.unpack(Arguments))
+				task.spawn(Listener, table.unpack(Arguments))
 			end
 			Queue.Reliable[0] = {}
 			return function (): ()
@@ -284,6 +312,34 @@ local Returns = table.freeze({
 					Events.Reliable[0] = nil
 				end
 			end
+		end
+	},
+	LastPlayed = {
+		On = function(Listener: (Player, nil) -> (number)): ()
+			Events.Reliable[1] = function(Player: Player, Value: nil, InvocationIdentifier: number): ()
+				local ReturnValue: number;
+				local Success, Error = pcall(function ()
+					ReturnValue = Listener(Player, Value)
+				end)
+				Load(PlayersMap[Player])
+				if Success ~= true then
+					local Position = Allocate(3)
+					buffer.writeu8(SendBuffer, Position, 1)
+					buffer.writeu8(SendBuffer, Position + 1, InvocationIdentifier)
+					buffer.writeu8(SendBuffer, Position + 2, 0)
+					warn(`"LastPlayed" encountered an error, {Error}`)
+				else
+					WriteFUNCTION_RETURN_LastPlayed(ReturnValue, InvocationIdentifier)
+				end
+				PlayersMap[Player] = Save()
+			end
+			task.spawn(function (): ()
+				local EventQueue = Queue.Reliable[1] or {}
+				Queue.Reliable[1] = nil
+				for Index, Arguments in EventQueue do
+					Events.Reliable[1](table.unpack(Arguments))
+				end
+			end)
 		end
 	},
 })

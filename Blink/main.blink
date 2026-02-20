@@ -1,9 +1,15 @@
 option ClientOutput = "./client/init.luau"
 option ServerOutput = "./server/init.luau"
+option PromiseLibrary = "ReplicatedStorage.Packages.Promise"
 
-event Hit {
+event ide {
     from: Client,
     type: Reliable,
-    call: SingleSync,
-    data: (u8, u8, u8 )
+    call: SingleAsync,
+    data: (u8)
+}
+
+function LastPlayed {
+    Yield: Promise,
+    Return: f64
 }
