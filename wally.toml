@@ -66,6 +66,7 @@ Hammer = "mark-marks/hammer@0.3.1"
 # https://github.com/Mark-Marks/hammer
 
 Planck = "yetanotherclown/planck@0.2.0"
+PlanckRunService = "yetanotherclown/planck-runservice@0.2.0"
 # ECS scheduler
 # https://github.com/YetAnotherClown/planck
 # https://yetanotherclown.github.io/planck/docs/getting_started/introduction

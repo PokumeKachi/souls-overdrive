@@ -9,7 +9,19 @@ event ide {
     data: (u8)
 }
 
-function LastPlayed {
-    Yield: Promise,
-    Return: f64
+function getLastPlayed {
+    yield: Promise,
+    return: f64
+}
+
+function ecsReceiveFullWorldData {
+    yield: Promise,
+    return: (unknown, unknown)
+}
+
+event ecsUpdate {
+    from: Server,
+    type: Reliable,
+    call: SingleSync,
+    data: (unknown, unknown)
 }

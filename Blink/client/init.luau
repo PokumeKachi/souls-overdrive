@@ -159,6 +159,8 @@ local Queue: any = {
 local SerdesEvent = "?"
 local SerdesThread: thread?
 Queue.Reliable[1] = table.create(256)
+Queue.Reliable[2] = table.create(256)
+Queue.Reliable[3] = table.create(256)
 local function WriteEVENT_ide(Value1: number): ()
 	-- Allocate BLOCK: 2 bytes
 	local BLOCK_START = Allocate(2)
@@ -166,14 +168,14 @@ local function WriteEVENT_ide(Value1: number): ()
 	buffer.writeu8(SendBuffer, BLOCK_START + 1, Value1)
 end
 
-local function WriteFUNCTION_DATA_LastPlayed(Value: nil, InvocationIdentifier: number): ()
+local function WriteFUNCTION_DATA_getLastPlayed(Value: nil, InvocationIdentifier: number): ()
 	-- Allocate BLOCK: 2 bytes
 	local BLOCK_START = Allocate(2)
 	buffer.writeu8(SendBuffer, BLOCK_START + 0, 1)
 	buffer.writeu8(SendBuffer, BLOCK_START + 1, InvocationIdentifier)
 end
 
-local function ReadFUNCTION_RETURN_LastPlayed(): (number)
+local function ReadFUNCTION_RETURN_getLastPlayed(): (number)
 	-- Read BLOCK: 9 bytes
 	local BLOCK_START = Read(9)
 	local Success = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
@@ -184,14 +186,49 @@ local function ReadFUNCTION_RETURN_LastPlayed(): (number)
 	return Value
 end
 
+local function WriteFUNCTION_DATA_ecsReceiveFullWorldData(Value: nil, InvocationIdentifier: number): ()
+	-- Allocate BLOCK: 2 bytes
+	local BLOCK_START = Allocate(2)
+	buffer.writeu8(SendBuffer, BLOCK_START + 0, 2)
+	buffer.writeu8(SendBuffer, BLOCK_START + 1, InvocationIdentifier)
+end
+
+local function ReadFUNCTION_RETURN_ecsReceiveFullWorldData(): (any, any)
+	-- Read BLOCK: 1 bytes
+	local BLOCK_START = Read(1)
+	local Success = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
+	if Success ~= 1 then
+		error("Server encountered an error.")
+	end
+	RecieveInstanceCursor += 1
+	local Value1 = RecieveInstances[RecieveInstanceCursor]
+	RecieveInstanceCursor += 1
+	local Value2 = RecieveInstances[RecieveInstanceCursor]
+	return Value1, Value2
+end
+
+local function ReadEVENT_ecsUpdate(): (any, any)
+	RecieveInstanceCursor += 1
+	local Value1 = RecieveInstances[RecieveInstanceCursor]
+	RecieveInstanceCursor += 1
+	local Value2 = RecieveInstances[RecieveInstanceCursor]
+	return Value1, Value2
+end
+
 if not RunService:IsRunning() then
 	local NOOP = function() end
 	local Returns = table.freeze({
 	ide = {
 		Fire = NOOP
 	},
-	LastPlayed = {
+	getLastPlayed = {
 		Invoke = NOOP
+	},
+	ecsReceiveFullWorldData = {
+		Invoke = NOOP
+	},
+	ecsUpdate = {
+		On = NOOP
 	},
 	})
 	return Returns :: BLINK_EVENTS_SYMBOL
@@ -240,11 +277,33 @@ Reliable.OnClientEvent:Connect(function(Buffer: buffer, Instances: {Instance})
 			local BLOCK_START = Read(1)
 			local InvocationIdentifier = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
 				local Success, ReturnValue = pcall(function ()
-					return ReadFUNCTION_RETURN_LastPlayed()
+					return ReadFUNCTION_RETURN_getLastPlayed()
 				end)
 			if Calls[InvocationIdentifier] ~= nil then
 				task.spawn(Calls[InvocationIdentifier], Success, ReturnValue)
 				Calls[InvocationIdentifier] = nil
+			end
+		elseif Index == 2 then
+			-- Read BLOCK: 1 bytes
+			local BLOCK_START = Read(1)
+			local InvocationIdentifier = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
+				local Success, ReturnValue1, ReturnValue2 = pcall(function ()
+					return ReadFUNCTION_RETURN_ecsReceiveFullWorldData()
+				end)
+			if Calls[InvocationIdentifier] ~= nil then
+				task.spawn(Calls[InvocationIdentifier], Success, ReturnValue1, ReturnValue2)
+				Calls[InvocationIdentifier] = nil
+			end
+		elseif Index == 3 then
+			local Value1: any, Value2: any = ReadEVENT_ecsUpdate()
+			if Events.Reliable[3] ~= nil then
+				SerdesEvent = "ecsUpdate"
+				Events.Reliable[3](Value1, Value2)
+			else
+				if #Queue.Reliable[3] > 256 then
+					warn("[Blink]: Event queue of \"ecsUpdate\" exceeded 256, did you forget to implement a listener?")
+				end
+				table.insert(Queue.Reliable[3], {Value1, Value2} :: {any})
 			end
 		end
 	end
@@ -276,7 +335,7 @@ local Returns = table.freeze({
 			WriteEVENT_ide(Value1)
 		end
 	},
-	LastPlayed = {
+	getLastPlayed = {
 		Invoke = function(Value: nil)
 			return Promise.new(function (Resolve, Reject, OnCancel)
 				local InvocationIdentifier = Invoke()
@@ -284,18 +343,54 @@ local Returns = table.freeze({
 					Invocations -= 1
 					error("More than 256 calls are awaiting a response, this packet has been dropped.")
 				end
-				WriteFUNCTION_DATA_LastPlayed(Value, InvocationIdentifier)
+				WriteFUNCTION_DATA_getLastPlayed(Value, InvocationIdentifier)
 				Calls[InvocationIdentifier] = coroutine.running()
 				OnCancel(function ()
 					Calls[InvocationIdentifier] = nil
 				end)
 				local Success, ReturnValue: number = coroutine.yield()
 				if Success ~= true then
-					Reject("There was an exception while processing \"LastPlayed\".")
+					Reject("There was an exception while processing \"getLastPlayed\".")
 					return 
 				end
 				Resolve(ReturnValue)
 			end)
+		end
+	},
+	ecsReceiveFullWorldData = {
+		Invoke = function(Value: nil)
+			return Promise.new(function (Resolve, Reject, OnCancel)
+				local InvocationIdentifier = Invoke()
+				if Calls[InvocationIdentifier] ~= nil then
+					Invocations -= 1
+					error("More than 256 calls are awaiting a response, this packet has been dropped.")
+				end
+				WriteFUNCTION_DATA_ecsReceiveFullWorldData(Value, InvocationIdentifier)
+				Calls[InvocationIdentifier] = coroutine.running()
+				OnCancel(function ()
+					Calls[InvocationIdentifier] = nil
+				end)
+				local Success, ReturnValue1: any, ReturnValue2: any = coroutine.yield()
+				if Success ~= true then
+					Reject("There was an exception while processing \"ecsReceiveFullWorldData\".")
+					return 
+				end
+				Resolve(ReturnValue1, ReturnValue2)
+			end)
+		end
+	},
+	ecsUpdate = {
+		On = function(Listener: (Value1: any, Value2: any) -> ()): () -> ()
+			Events.Reliable[3] = Listener
+			for Index, Arguments in Queue.Reliable[3] do
+				Listener(table.unpack(Arguments))
+			end
+			Queue.Reliable[3] = {}
+			return function (): ()
+				if Events.Reliable[3] == Listener then
+					Events.Reliable[3] = nil
+				end
+			end
 		end
 	},
 })

@@ -15,17 +15,17 @@ type ProfileSession = typeof(PlayerStore:StartSessionAsync())
 
 local Profiles: { [Player]: ProfileSession } = {}
 
-local Profile = {}
+local profileAPI = {}
 
-function Profile:GetProfile(player: Player): ProfileSession?
+function profileAPI:GetProfile(player: Player): ProfileSession?
 	return Profiles[player]
 end
 
-function Profile:SetProfile(player: Player, value: ProfileSession?): ()
+function profileAPI:SetProfile(player: Player, value: ProfileSession?): ()
 	Profiles[player] = value
 end
 
-function Profile:StartSession(player: Player)
+function profileAPI:StartSession(player: Player)
 	return Promise.new(function(resolve, reject, onCancel)
 		local profile: ProfileSession = PlayerStore:StartSessionAsync(`{player.UserId}`, {
 			Cancel = function()
@@ -38,12 +38,12 @@ function Profile:StartSession(player: Player)
 			profile:Reconcile()
 
 			profile.OnSessionEnd:Connect(function()
-				Profile:SetProfile(player, nil)
+				profileAPI:SetProfile(player, nil)
 				player:Kick(`Your data has been loaded on another server - please rejoin`)
 			end)
 
 			if player.Parent == Players then
-				Profile:SetProfile(player, profile)
+				profileAPI:SetProfile(player, profile)
 
 				resolve(profile)
 			else
@@ -59,7 +59,7 @@ function Profile:StartSession(player: Player)
 	end)
 end
 
-function Profile:EndSession(player: Player): ()
+function profileAPI:EndSession(player: Player): ()
 	local profile = Profiles[player]
 
 	if profile ~= nil then
@@ -67,16 +67,16 @@ function Profile:EndSession(player: Player): ()
 	end
 end
 
-function Profile.OnLastSave(player: Player): RBXScriptSignal
+function profileAPI.OnLastSave(player: Player): RBXScriptSignal
 	if Profiles[player] then
 		return Profiles[player].OnLastSave
 	end
 end
 
-function Profile.OnSessionEnd(player: Player): RBXScriptSignal
+function profileAPI.OnSessionEnd(player: Player): RBXScriptSignal
 	if Profiles[player] then
 		return Profiles[player].OnSessionEnd
 	end
 end
 
-return Profile
+return profileAPI

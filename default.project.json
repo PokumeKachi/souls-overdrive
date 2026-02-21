@@ -25,7 +25,7 @@
     },
     "ServerScriptService": {
       "API": {
-        "$path": "src/api",
+        "$path": "src/serverApi",
         "Networking": {
           "$path": "Blink/server"
         }

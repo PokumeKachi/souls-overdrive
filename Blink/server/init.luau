@@ -161,6 +161,7 @@ local SerdesEvent = "?"
 local SerdesThread: thread?
 Queue.Reliable[0] = table.create(256)
 Queue.Reliable[1] = table.create(256)
+Queue.Reliable[2] = table.create(256)
 local function ReadEVENT_ide(): (number)
 	-- Read BLOCK: 1 bytes
 	local BLOCK_START = Read(1)
@@ -168,11 +169,11 @@ local function ReadEVENT_ide(): (number)
 	return Value1
 end
 
-local function ReadFUNCTION_DATA_LastPlayed(): (nil)
+local function ReadFUNCTION_DATA_getLastPlayed(): (nil)
 	return nil
 end
 
-local function WriteFUNCTION_RETURN_LastPlayed(Value: number, InvocationIdentifier: number): ()
+local function WriteFUNCTION_RETURN_getLastPlayed(Value: number, InvocationIdentifier: number): ()
 	-- Allocate BLOCK: 11 bytes
 	local BLOCK_START = Allocate(11)
 	buffer.writeu8(SendBuffer, BLOCK_START + 0, 1)
@@ -181,14 +182,45 @@ local function WriteFUNCTION_RETURN_LastPlayed(Value: number, InvocationIdentifi
 	buffer.writef64(SendBuffer, BLOCK_START + 3, Value)
 end
 
+local function ReadFUNCTION_DATA_ecsReceiveFullWorldData(): (nil)
+	return nil
+end
+
+local function WriteFUNCTION_RETURN_ecsReceiveFullWorldData(Value1: any, Value2: any, InvocationIdentifier: number): ()
+	-- Allocate BLOCK: 3 bytes
+	local BLOCK_START = Allocate(3)
+	buffer.writeu8(SendBuffer, BLOCK_START + 0, 2)
+	buffer.writeu8(SendBuffer, BLOCK_START + 1, InvocationIdentifier)
+	buffer.writeu8(SendBuffer, BLOCK_START + 2, 1)
+	table.insert(SendInstances, if Value1 == nil then Null else Value1)
+	table.insert(SendInstances, if Value2 == nil then Null else Value2)
+end
+
+local function WriteEVENT_ecsUpdate(Value1: any, Value2: any): ()
+	-- Allocate BLOCK: 1 bytes
+	local BLOCK_START = Allocate(1)
+	buffer.writeu8(SendBuffer, BLOCK_START + 0, 3)
+	table.insert(SendInstances, if Value1 == nil then Null else Value1)
+	table.insert(SendInstances, if Value2 == nil then Null else Value2)
+end
+
 if not RunService:IsRunning() then
 	local NOOP = function() end
 	local Returns = table.freeze({
 	ide = {
 		On = NOOP
 	},
-	LastPlayed = {
+	getLastPlayed = {
 		On = NOOP
+	},
+	ecsReceiveFullWorldData = {
+		On = NOOP
+	},
+	ecsUpdate = {
+		Fire = NOOP,
+		FireAll = NOOP,
+		FireList = NOOP,
+		FireExcept = NOOP
 	},
 	})
 	return Returns :: BLINK_EVENTS_SYMBOL
@@ -266,14 +298,27 @@ Reliable.OnServerEvent:Connect(function(Player: Player, Buffer: buffer, Instance
 			-- Read BLOCK: 1 bytes
 			local BLOCK_START = Read(1)
 			local InvocationIdentifier = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
-			local Value: nil = ReadFUNCTION_DATA_LastPlayed()
+			local Value: nil = ReadFUNCTION_DATA_getLastPlayed()
 			if Events.Reliable[1] ~= nil then
 				task.spawn(Events.Reliable[1], Player, Value, InvocationIdentifier)
 			else
 				if #Queue.Reliable[1] > 256 then
-					warn("[Blink]: Event queue of \"LastPlayed\" exceeded 256, did you forget to implement a listener?")
+					warn("[Blink]: Event queue of \"getLastPlayed\" exceeded 256, did you forget to implement a listener?")
 				end
 				table.insert(Queue.Reliable[1], {Player, Value, InvocationIdentifier} :: {any})
+			end
+		elseif Index == 2 then
+			-- Read BLOCK: 1 bytes
+			local BLOCK_START = Read(1)
+			local InvocationIdentifier = buffer.readu8(RecieveBuffer, BLOCK_START + 0)
+			local Value: nil = ReadFUNCTION_DATA_ecsReceiveFullWorldData()
+			if Events.Reliable[2] ~= nil then
+				task.spawn(Events.Reliable[2], Player, Value, InvocationIdentifier)
+			else
+				if #Queue.Reliable[2] > 256 then
+					warn("[Blink]: Event queue of \"ecsReceiveFullWorldData\" exceeded 256, did you forget to implement a listener?")
+				end
+				table.insert(Queue.Reliable[2], {Player, Value, InvocationIdentifier} :: {any})
 			end
 		end
 	end
@@ -314,7 +359,7 @@ local Returns = table.freeze({
 			end
 		end
 	},
-	LastPlayed = {
+	getLastPlayed = {
 		On = function(Listener: (Player, nil) -> (number)): ()
 			Events.Reliable[1] = function(Player: Player, Value: nil, InvocationIdentifier: number): ()
 				local ReturnValue: number;
@@ -327,9 +372,9 @@ local Returns = table.freeze({
 					buffer.writeu8(SendBuffer, Position, 1)
 					buffer.writeu8(SendBuffer, Position + 1, InvocationIdentifier)
 					buffer.writeu8(SendBuffer, Position + 2, 0)
-					warn(`"LastPlayed" encountered an error, {Error}`)
+					warn(`"getLastPlayed" encountered an error, {Error}`)
 				else
-					WriteFUNCTION_RETURN_LastPlayed(ReturnValue, InvocationIdentifier)
+					WriteFUNCTION_RETURN_getLastPlayed(ReturnValue, InvocationIdentifier)
 				end
 				PlayersMap[Player] = Save()
 			end
@@ -341,6 +386,80 @@ local Returns = table.freeze({
 				end
 			end)
 		end
+	},
+	ecsReceiveFullWorldData = {
+		On = function(Listener: (Player, nil) -> (any, any)): ()
+			Events.Reliable[2] = function(Player: Player, Value: nil, InvocationIdentifier: number): ()
+				local ReturnValue1: any, ReturnValue2: any;
+				local Success, Error = pcall(function ()
+					ReturnValue1, ReturnValue2 = Listener(Player, Value)
+				end)
+				Load(PlayersMap[Player])
+				if Success ~= true then
+					local Position = Allocate(3)
+					buffer.writeu8(SendBuffer, Position, 2)
+					buffer.writeu8(SendBuffer, Position + 1, InvocationIdentifier)
+					buffer.writeu8(SendBuffer, Position + 2, 0)
+					warn(`"ecsReceiveFullWorldData" encountered an error, {Error}`)
+				else
+					WriteFUNCTION_RETURN_ecsReceiveFullWorldData(ReturnValue1, ReturnValue2, InvocationIdentifier)
+				end
+				PlayersMap[Player] = Save()
+			end
+			task.spawn(function (): ()
+				local EventQueue = Queue.Reliable[2] or {}
+				Queue.Reliable[2] = nil
+				for Index, Arguments in EventQueue do
+					Events.Reliable[2](table.unpack(Arguments))
+				end
+			end)
+		end
+	},
+	ecsUpdate = {
+		Fire = function(Player: Player, Value1: any, Value2: any): ()
+			Load(PlayersMap[Player])
+			WriteEVENT_ecsUpdate(Value1, Value2)
+			PlayersMap[Player] = Save()
+		end,
+		FireAll = function(Value1: any, Value2: any): ()
+			Load()
+			WriteEVENT_ecsUpdate(Value1, Value2)
+			local Buffer, Size, Instances = SendBuffer, SendCursor, SendInstances
+			for _, Player in Players:GetPlayers() do
+				Load(PlayersMap[Player])
+				local Position = Allocate(Size)
+				buffer.copy(SendBuffer, Position, Buffer, 0, Size)
+				table.move(Instances, 1, #Instances, #SendInstances + 1, SendInstances)
+				PlayersMap[Player] = Save()
+			end
+		end,
+		FireList = function(List: {Player}, Value1: any, Value2: any): ()
+			Load()
+			WriteEVENT_ecsUpdate(Value1, Value2)
+			local Buffer, Size, Instances = SendBuffer, SendCursor, SendInstances
+			for _, Player in List do
+				Load(PlayersMap[Player])
+				local Position = Allocate(Size)
+				buffer.copy(SendBuffer, Position, Buffer, 0, Size)
+				table.move(Instances, 1, #Instances, #SendInstances + 1, SendInstances)
+				PlayersMap[Player] = Save()
+			end
+		end,
+		FireExcept = function(Except: Player, Value1: any, Value2: any): ()
+			Load()
+			WriteEVENT_ecsUpdate(Value1, Value2)
+			local Buffer, Size, Instances = SendBuffer, SendCursor, SendInstances
+			for _, Player in Players:GetPlayers() do
+				if Player == Except then
+					continue
+				end
+				Load(PlayersMap[Player])
+				local Position = Allocate(Size)
+				buffer.copy(SendBuffer, Position, Buffer, 0, Size)
+				table.move(Instances, 1, #Instances, #SendInstances + 1, SendInstances)
+				PlayersMap[Player] = Save()
+			end
+		end,
 	},
 })
 type BLINK_EVENTS_SYMBOL = typeof(Returns)

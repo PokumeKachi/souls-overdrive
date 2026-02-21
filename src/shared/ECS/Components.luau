@@ -5,15 +5,17 @@ local Packages = ReplicatedStorage.Packages
 local Jecs = require(Packages.Jecs)
 local Replecs = require(Packages.Replecs)
 
-local World = require(script.Parent.World)
+local Shared = ReplicatedStorage.Shared
+
+local World = require(Shared.ECS.World)
 
 local Components = {
-    Energy = World:component(),
+	Energy = World:component() :: Jecs.id<number>,
 }
 
 for name, component in Components do
-    World:set(component, Jecs.Name, name)
-    World:add(component, Replecs.shared)
+	World:set(component, Jecs.Name, name)
+	World:add(component, Replecs.shared)
 end
 
 return Components

@@ -48,7 +48,7 @@ return function(props: {
 	})
 
 	React.useEffect(function()
-		Networking.LastPlayed.Invoke():andThen(function(lastPlayed: number)
+		Networking.getLastPlayed.Invoke():andThen(function(lastPlayed: number)
 			displayText(
 				`It's been quite a while... [CODE: {lastPlayed} SECONDS SINCE LAST CONSCIOUS]`,
 				slideInSpring,

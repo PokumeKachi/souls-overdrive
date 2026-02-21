@@ -12,7 +12,7 @@ local Promise = require(Packages.Promise)
 local Shared = ReplicatedStorage.Shared
 local assets = require(Shared.assets)
 
-local ANIMATION_DURATION = 3
+local ANIMATION_DURATION = 2
 
 return function(props: {
 	cleanupCallback: () -> (),

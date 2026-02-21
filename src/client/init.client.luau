@@ -13,7 +13,7 @@ local guiHandle = Instance.new('ScreenGui')
 local guiRoot = ReactRoblox.createRoot(guiHandle)
 
 local Gui = require(script.Gui)
--- local ECS = require(script.ECS)
+local ECS = require(script.ECS)
 
 Chrono.Start()
 

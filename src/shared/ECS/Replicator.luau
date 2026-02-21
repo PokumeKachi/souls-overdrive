@@ -8,8 +8,12 @@ local RunService = game:GetService("RunService")
 
 local World = require(script.Parent.World)
 
+local replicator = Replecs.create(World)
+
 if RunService:IsServer() then
-	return Replecs.create_server(World)
+	replicator.server:init(World)
 else
-	return Replecs.create_client(World)
+	replicator.client:init(World)
 end
+
+return replicator
