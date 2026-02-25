@@ -9,7 +9,7 @@ local Promise = require(Packages.Promise)
 local Shared = ReplicatedStorage.Shared
 local Networking = require(Shared.Networking)
 
-local ANIMATION_DURATION = 3
+local TEXT_DURATION = 3
 
 local function displayText(text: string, slideInSpring, setMessage)
 	slideInSpring:setGoal(1)
@@ -23,7 +23,7 @@ local function displayText(text: string, slideInSpring, setMessage)
 			task.wait(0.02 + (i / #text) ^ 2 * 0.08)
 		end
 
-		return Promise.delay(5)
+		return Promise.delay(TEXT_DURATION)
 	end):andThen(function()
 		slideInSpring:setGoal(0)
 

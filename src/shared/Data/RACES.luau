@@ -18,6 +18,7 @@ local names = {
 }
 
 local RACES = {}
+
 for i, name in ipairs(names) do
 	RACES[name] = i
 end

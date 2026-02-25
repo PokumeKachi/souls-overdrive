@@ -6,19 +6,17 @@ local Replecs = require(Packages.Replecs)
 local Planck = require(Packages.Planck)
 local PlanckRunService = require(Packages.PlanckRunService)
 local Scheduler = Planck.Scheduler
-local Promise = require(Packages.Promise)
 
 local Shared = ReplicatedStorage.Shared
-local World = require(Shared.ECS.World)
-local Components = require(Shared.ECS.Components)
-local Replicator = require(Shared.ECS.Replicator).server
+local World = require(Shared.Ecs.World)
+local Components = require(Shared.Ecs.Components)
+local Replicator = require(Shared.Ecs.Replicator).server
 
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local API = ServerScriptService.API
-local Networking = require(API.Networking)
-
-local RunService = game:GetService("RunService")
+local Api = ServerScriptService.Api
+local Networking = require(Api.Networking)
+local Systems = Api.Ecs.Systems
 
 local state = {}
 
@@ -32,61 +30,54 @@ end
 
 local scheduler: SchedulerType = createScheduler()
 
-local ecsAPI = {}
+local ecsApi = {}
 
-function ecsAPI:GetWorld()
-	return World
+local REPLICATION_INIT_FINISH = false
+
+function ecsApi:ReplicationInit()
+	Networking.ecsReceiveFullWorldData.On(function(player: Player)
+		Replicator:mark_player_ready(player)
+		return Replicator:get_full(player)
+	end)
+
+	REPLICATION_INIT_FINISH = true
+
+	ecsApi:AddSystem(Systems.Replication)
 end
 
-function ecsAPI:GetComponents()
-	return Components
-end
-
-function ecsAPI:GetReplicator()
-	return Replicator
-end
-
-function ecsAPI:GetScheduler(): typeof(Scheduler.new(nil :: any, nil :: any))
+function ecsApi:GetScheduler(): typeof(Scheduler.new(nil :: any, nil :: any))
 	return scheduler
 end
 
-function ecsAPI:GetState()
+function ecsApi:GetReplicator()
+	return Replicator
+end
+
+function ecsApi:GetState()
 	return state
 end
 
-function ecsAPI:CreatePlayer(player: Player): typeof(World:entity(nil :: any))
+function ecsApi:GetPhases()
+	return PlanckRunService.Phases
+end
+
+function ecsApi:CreatePlayer(player: Player): typeof(World:entity(nil :: any))
 	local entity = World:entity()
 
-	World:add(entity, Replecs.networked)
+	World:set(entity, Replecs.networked, {
+		[player] = true,
+	})
 
 	World:add(entity, Jecs.pair(Replecs.reliable, Components.Energy))
 	World:set(entity, Components.Energy, 150)
 
+	World:add(entity, Jecs.pair(Replecs.reliable, Components.Player))
+	World:set(entity, Components.Player, player.UserId)
+
 	return entity
 end
 
-function ecsAPI.SendFullWorld(player: Player)
-	Replicator:mark_player_ready(player)
-	return Replicator:get_full(player)
-end
-
-function ecsAPI:Replicate()
-	for player, buf, variants in Replicator:collect_updates() do
-		Promise.try(function()
-			while not Replicator:is_player_ready(player) do
-				task.wait()
-			end
-
-			Networking.ecsUpdate.Fire(player, buf, variants)
-		end)
-	end
-end
-
-function ecsAPI:GetPhases()
-	return PlanckRunService.Phases
-end
-
-function ecsAPI:CreateInterval(seconds: number)
+function ecsApi:CreateInterval(seconds: number)
 	local accumulator = 0
 	local last = nil
 
@@ -113,4 +104,8 @@ function ecsAPI:CreateInterval(seconds: number)
 	end
 end
 
-return ecsAPI
+function ecsApi:AddSystem(system: ModuleScript)
+	scheduler:addSystem(require(system))
+end
+
+return ecsApi

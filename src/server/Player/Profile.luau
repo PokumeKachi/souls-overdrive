@@ -1,22 +1,22 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local API = ServerScriptService.API
+local Api = ServerScriptService.Api
 
-local profileAPI = require(API.Profile)
+local profileApi = require(Api.Profile)
 
 local profilePlayer = {}
 
 function profilePlayer.PlayerAdded(player: Player)
-	return profileAPI:StartSession(player):andThen(function()
+	return profileApi:StartSession(player):andThen(function()
 		print(`Profile loaded for {player.DisplayName}!`)
 
-		local profile = profileAPI:GetProfile(player)
+		local profile = profileApi:GetProfile(player)
 
 		print(`Player last joined our game {os.time() - profile.Data.LastPlayed} seconds ago!`)
 
-		profileAPI.OnLastSave(player):Connect(function()
+		profileApi.OnLastSave(player):Connect(function()
 			print(`Last chance to save data for {player.DisplayName}!`)
-			local profile = profileAPI:GetProfile(player)
+			local profile = profileApi:GetProfile(player)
 
 			profile.Data.LastPlayed = os.time()
 		end)
@@ -28,7 +28,7 @@ function profilePlayer.PlayerAdded(player: Player)
 end
 
 function profilePlayer.PlayerRemoved(player: Player)
-	profileAPI:EndSession(player)
+	profileApi:EndSession(player)
 end
 
 return profilePlayer

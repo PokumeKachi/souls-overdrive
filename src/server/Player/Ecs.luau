@@ -1,15 +1,15 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local API = ServerScriptService.API
+local Api = ServerScriptService.Api
 
-local ecsAPI = require(API.ECS)
+local ecsApi = require(Api.Ecs)
 
 local entities = {}
 
 local ecsPlayer = {}
 
 function ecsPlayer.PlayerAdded(player: Player)
-	local entity = ecsAPI:CreatePlayer(player)
+	local entity = ecsApi:CreatePlayer(player)
 	entities[player] = entity
 end
 

@@ -1,12 +1,12 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local API = ServerScriptService.API
+local Api = ServerScriptService.Api
 
-local ecsAPI = require(API.ECS)
+local ecsApi = require(Api.Ecs)
 
--- local Interval = ecsAPI:CreateInterval(1 / 30)
+-- local Interval = ecsApi:CreateInterval(1 / 30)
 
-local function system(world: typeof(ecsAPI:GetWorld()), state: typeof(ecsAPI:GetState()))
+local function system(world: typeof(ecsApi:GetWorld()), state: typeof(ecsApi:GetState()))
     -- system logic goes here
 end
 
@@ -17,7 +17,7 @@ end
 return {
     name = "name",
     system = system,
-    phase = ecsAPI:GetPhases().PostUpdate,
+    phase = ecsApi:GetPhases().PostUpdate,
     runConditions = {
         check,
     },

@@ -1,2 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-require(ReplicatedStorage.Packages.Chrono).Start()
+
+local Packages = ReplicatedStorage.Packages
+local Chrono = require(Packages.Chrono)
+
+Chrono.Start()
+

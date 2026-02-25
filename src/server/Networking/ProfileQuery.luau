@@ -1,8 +1,8 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local API = ServerScriptService.API
+local Api = ServerScriptService.Api
 
-local Profile = require(API.Profile)
+local Profile = require(Api.Profile)
 
 local profileQuery = {}
 

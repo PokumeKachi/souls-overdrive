@@ -5,7 +5,6 @@ local TweenService = game:GetService("TweenService")
 local Packages = ReplicatedStorage.Packages
 local React = require(Packages.React)
 local Ripple = require(Packages.ReactRipple)
--- local Tween = require(Packages.TweenPlus)
 
 local Promise = require(Packages.Promise)
 
@@ -50,14 +49,6 @@ return function(props: {
 						FieldOfView = oldFov,
 					}
 				)
-
-				-- local cameraTween = Tween(camera, {
-				-- 	FieldOfView = oldFov,
-				-- }, { -- Options (optional).
-				-- 	Time = 10,
-				-- 	EasingStyle = "Expo",
-				-- 	EasingDirection = "Out",
-				-- })
 
 				camera.FieldOfView = 120
 				cameraTween:Play()

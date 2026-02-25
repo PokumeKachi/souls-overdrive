@@ -8,24 +8,24 @@ local ProfileStore = require(ServerPackages.ProfileStore)
 
 local Players = game:GetService("Players")
 
-local Schema = require("@self/Schema")
+local Schema = require(script.Schema)
 local PlayerStore = ProfileStore.New("PlayerStore", Schema)
 
 type ProfileSession = typeof(PlayerStore:StartSessionAsync())
 
 local Profiles: { [Player]: ProfileSession } = {}
 
-local profileAPI = {}
+local profileApi = {}
 
-function profileAPI:GetProfile(player: Player): ProfileSession?
+function profileApi:GetProfile(player: Player): ProfileSession?
 	return Profiles[player]
 end
 
-function profileAPI:SetProfile(player: Player, value: ProfileSession?): ()
+function profileApi:SetProfile(player: Player, value: ProfileSession?): ()
 	Profiles[player] = value
 end
 
-function profileAPI:StartSession(player: Player)
+function profileApi:StartSession(player: Player)
 	return Promise.new(function(resolve, reject, onCancel)
 		local profile: ProfileSession = PlayerStore:StartSessionAsync(`{player.UserId}`, {
 			Cancel = function()
@@ -38,12 +38,12 @@ function profileAPI:StartSession(player: Player)
 			profile:Reconcile()
 
 			profile.OnSessionEnd:Connect(function()
-				profileAPI:SetProfile(player, nil)
+				profileApi:SetProfile(player, nil)
 				player:Kick(`Your data has been loaded on another server - please rejoin`)
 			end)
 
 			if player.Parent == Players then
-				profileAPI:SetProfile(player, profile)
+				profileApi:SetProfile(player, profile)
 
 				resolve(profile)
 			else
@@ -59,7 +59,7 @@ function profileAPI:StartSession(player: Player)
 	end)
 end
 
-function profileAPI:EndSession(player: Player): ()
+function profileApi:EndSession(player: Player): ()
 	local profile = Profiles[player]
 
 	if profile ~= nil then
@@ -67,16 +67,16 @@ function profileAPI:EndSession(player: Player): ()
 	end
 end
 
-function profileAPI.OnLastSave(player: Player): RBXScriptSignal
+function profileApi.OnLastSave(player: Player): RBXScriptSignal
 	if Profiles[player] then
 		return Profiles[player].OnLastSave
 	end
 end
 
-function profileAPI.OnSessionEnd(player: Player): RBXScriptSignal
+function profileApi.OnSessionEnd(player: Player): RBXScriptSignal
 	if Profiles[player] then
 		return Profiles[player].OnSessionEnd
 	end
 end
 
-return profileAPI
+return profileApi

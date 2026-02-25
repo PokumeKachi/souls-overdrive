@@ -1,8 +1,8 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local API = ServerScriptService.API
+local Api = ServerScriptService.Api
 
-local Networking = require(API.Networking)
+local Networking = require(Api.Networking)
 
 local profileQuery = require(script.ProfileQuery)
 

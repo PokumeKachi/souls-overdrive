@@ -6,13 +6,16 @@
       "$path": "Lighting",
       "$properties": {
         "Brightness": 2,
-        "Outlines": false,
+        "GlobalShadows": true,
         "Ambient": [0, 0, 0],
         "Technology": "Voxel",
-        "GlobalShadows": true
+        "Outlines": false
       }
     },
     "ReplicatedStorage": {
+      "Api": {
+        "$path": "src/clientApi"
+      },
       "Packages": {
         "$path": "Packages"
       },
@@ -24,7 +27,7 @@
       }
     },
     "ServerScriptService": {
-      "API": {
+      "Api": {
         "$path": "src/serverApi",
         "Networking": {
           "$path": "Blink/server"
