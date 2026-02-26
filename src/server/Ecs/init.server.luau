@@ -1,6 +1,7 @@
-local ServerScriptService = game:GetService("ServerScriptService")
-local Api = ServerScriptService.Api
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Networking = require(Api.Networking)
+local Packages = ReplicatedStorage.Packages
 
-local ecsApi = require(Api.Ecs):ReplicationInit()
+local Shared = ReplicatedStorage.Shared
+local World = require(Shared.Ecs.World)
+

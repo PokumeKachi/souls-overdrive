@@ -23,6 +23,8 @@ return function()
 			print(newEnergy)
 		end)
 
+    ecsApi:GetLocalPlayerEntity()
+
 	local uiCorner = React.createElement("UICorner", {
 		CornerRadius = UDim.new(0.1),
 	})

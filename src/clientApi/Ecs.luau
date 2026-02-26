@@ -42,6 +42,8 @@ function ecsApi:GetLocalPlayerEntity(): typeof(World:entity())
 		end
 	end
 
+    print(`Player is {playerEntity}`)
+
 	return playerEntity
 end
 

@@ -46,6 +46,9 @@ Jecs = "ukendio/jecs@0.9.0"
 # ECS engine
 # https://yetanotherclown.github.io/jecs-community/
 
+Jabby = "alicesaidhi/jabby@0.2.0"
+# ECS debugger
+
 Axis = "neond00m/axis@0.2.4"
 # Jecs input library
 # https://neond00m.github.io/Axis/docs/Introduction/getting_started

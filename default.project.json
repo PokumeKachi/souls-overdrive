@@ -5,11 +5,11 @@
     "Lighting": {
       "$path": "Lighting",
       "$properties": {
-        "Brightness": 2,
-        "GlobalShadows": true,
         "Ambient": [0, 0, 0],
+        "Outlines": false,
         "Technology": "Voxel",
-        "Outlines": false
+        "Brightness": 2,
+        "GlobalShadows": true
       }
     },
     "ReplicatedStorage": {
